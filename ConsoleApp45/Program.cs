@@ -1,45 +1,52 @@
-﻿// See https://aka.ms/new-console-template for more information
-using ConsoleApp45;
-using System.Text.Json;
+﻿Console.WriteLine("Hello, World!");
 
-Console.WriteLine("Hello, World!");
+// Create an instance of HttpClient
 HttpClient client = new HttpClient();
-HttpResponseMessage response = await client.GetAsync("https://jsonplaceholder.typicode.com/posts");
 
+// Send an HTTP GET request to the specified URL
+HttpResponseMessage response = await client.GetAsync("https://jsonplaceholder.typicode.com/posts");
 
 if (response.IsSuccessStatusCode)
 {
-
+    // Read the content of the response
     string content = await response.Content.ReadAsStringAsync();
-    List<Collector> articles = JsonSerializer.Deserialize<List<Collector>>(content);
-    string Path = @"C:\Users\nihad\OneDrive\Desktop\test.txt"; // Use @ to create a verbatim string
-    if (!File.Exists(Path))
+
+    // Deserialize the JSON array into a list of Collector objects
+//List<Collector> articles = JsonSerializer.Deserialize<List<Collector>>(content);
+
+    // Define the path for the file
+    string path = @"C:\Users\nihad\OneDrive\Desktop\test.txt";
+
+    if (!File.Exists(path))
     {
-        using (StreamWriter createWriter = File.CreateText(Path))
+        // Create the file if it doesn't exist
+        using (StreamWriter createWriter = File.CreateText(path))
         {
-            foreach (var article in articles)
+            foreach (var article in content)
             {
-                if (article.Id == 1 || article.Id == 10 || article.Id == 100)
-                {
-                    createWriter.Write(article);
-                }
+                // Check if the article Id is 1, 10, or 100
+                createWriter.Write(article);
             }
         }
-        Console.WriteLine("it created and added ");
+        Console.WriteLine("File created and articles added.");
     }
     else
     {
-        using (StreamWriter appendWriter = new StreamWriter(Path, true))
+        // Append to the existing file
+        using (StreamWriter appendWriter = new StreamWriter(path, true))
         {
-            appendWriter.Write(content);
+            foreach (var article in content)
+            {
+                // Check if the article Id is 1, 10, or 100
+                appendWriter.Write(article);
+            }
         }
-
-        Console.WriteLine("Text appended to existing file successfully.");
+        Console.WriteLine("Articles appended to the existing file successfully.");
     }
-
 }
 else
 {
     // Print the status code if the request was not successful
     Console.WriteLine($"Request failed with status code: {response.StatusCode}");
 }
+    
